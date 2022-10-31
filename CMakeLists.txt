@@ -329,7 +329,7 @@ if(VITA)
     NAME ${VITA_APP_NAME}
     FILE ${CMAKE_SOURCE_DIR}/sce_sys/icon0.png sce_sys/icon0.png
          ${CMAKE_SOURCE_DIR}/sce_sys/livearea/contents/bg0.png sce_sys/livearea/contents/bg0.png
-         ${CMAKE_SOURCE_DIR}/sce_sys/livearea/contents/rex.png sce_sys/livearea/contents/rex.png
+         ${CMAKE_SOURCE_DIR}/sce_sys/livearea/contents/billy.png sce_sys/livearea/contents/billy.png
          ${CMAKE_SOURCE_DIR}/sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
     )
 endif()
