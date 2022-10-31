@@ -806,11 +806,12 @@ use_current:
 													glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
 													break;
 										}
-										
+#ifndef __vita__										
 										glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);							// activate reflection mapping
 										glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);		
 										glEnable(GL_TEXTURE_GEN_S);
 										glEnable(GL_TEXTURE_GEN_T);
+#endif
 										texGen = true;
 									}
 								}		

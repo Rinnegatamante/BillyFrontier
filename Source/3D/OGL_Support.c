@@ -1113,10 +1113,10 @@ void OGL_Texture_SetOpenGLTexture(GLuint textureName)
 	
 //	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);	// disable mipmaps & turn on filtering
 //	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		
+#ifndef __vita__		
  	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, &gMaxAnisotropy);
 	glGetError();
-		
+#endif		
 	glEnable(GL_TEXTURE_2D);
 }
 
@@ -1309,6 +1309,7 @@ OGLLightDefType	*lights;
 
 GLenum _OGL_CheckError(const char* file, const int line)
 {
+#ifndef __vita__
 	GLenum error = glGetError();
 	if (error != 0)
 	{
@@ -1327,6 +1328,9 @@ GLenum _OGL_CheckError(const char* file, const int line)
 		DoFatalAlert("OpenGL error 0x%x (%s)\nin %s:%d", error, text, file, line);
 	}
 	return error;
+#else
+	return 0;
+#endif
 }
 
 
@@ -1442,7 +1446,9 @@ int		i;
 void OGL_EnableLighting(void)
 {
 	gMyState_Lighting = true;
-	glEnable(GL_LIGHTING);	
+#ifndef __vita__
+	glEnable(GL_LIGHTING);
+#endif
 }
 
 /******************* OGL DISABLE LIGHTING ****************************/

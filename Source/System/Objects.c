@@ -544,7 +544,9 @@ int				i;
 			if (!noCullFaces)
 			{
 				glDisable(GL_CULL_FACE);
+#ifndef __vita__
 				glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+#endif
 				noCullFaces = true;
 			}
 		}
@@ -553,7 +555,9 @@ int				i;
 		{
 			noCullFaces = false;
 			glEnable(GL_CULL_FACE);
+#ifndef __vita__
 			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);	
+#endif
 		}
 
 
@@ -852,7 +856,9 @@ next:
 	if (noCullFaces)
 	{
 		glEnable(GL_CULL_FACE);
+#ifndef __vita__
 		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);	
+#endif
 	}		
 				
 	if (clipAlpha)

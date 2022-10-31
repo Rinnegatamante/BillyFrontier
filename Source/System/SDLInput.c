@@ -26,8 +26,13 @@ InputBinding kDefaultBindings[NUM_CONTROL_NEEDS] =
 {
 	[kNeed_Shoot] =
 	{
+#ifndef __vita__
 		.mouseButton = SDL_BUTTON_LEFT,
+#endif
 		.hardKey = {SDL_SCANCODE_SPACE},
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER}},
+#endif
 	},
 
 	[kNeed_Reload] =		// unused in final version of the game
@@ -39,6 +44,9 @@ InputBinding kDefaultBindings[NUM_CONTROL_NEEDS] =
 	{
 		.mouseButton = SDL_BUTTON_RIGHT,
 		.userKey = {SDL_SCANCODE_LCTRL, SDL_SCANCODE_RCTRL},
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_LEFTSHOULDER}},
+#endif
 	},
 
 	[kNeed_Continue] =
@@ -50,6 +58,9 @@ InputBinding kDefaultBindings[NUM_CONTROL_NEEDS] =
 #else
 		.userKey = {SDL_SCANCODE_LALT, SDL_SCANCODE_RALT},
 #endif
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_B}},
+#endif
 	},
 
 	[kNeed_Jump] =
@@ -60,18 +71,27 @@ InputBinding kDefaultBindings[NUM_CONTROL_NEEDS] =
 #else
 		.userKey = {SDL_SCANCODE_LALT, SDL_SCANCODE_RALT},
 #endif
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_B}},
+#endif
 	},
 
 	[kNeed_Left] =
 	{
 		.hardKey = {SDL_SCANCODE_LEFT},
 		.userKey = {SDL_SCANCODE_A},
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_DPAD_LEFT}},
+#endif
 	},
 
 	[kNeed_Right] =
 	{
 		.hardKey = {SDL_SCANCODE_RIGHT},
 		.userKey = {SDL_SCANCODE_D},
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_DPAD_RIGHT}},
+#endif
 	},
 
 	[kNeed_UIPause] =
@@ -84,14 +104,22 @@ InputBinding kDefaultBindings[NUM_CONTROL_NEEDS] =
 	{
 		.hardKey = {SDL_SCANCODE_BACKSPACE},
 		.userKey = {SDL_SCANCODE_ESCAPE},
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_Y}},
+#else
 		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_BACK}},
+#endif
 	},
 
 	[kNeed_UIConfirm] =
 	{
 		.hardKey = {SDL_SCANCODE_SPACE},
 		.userKey = {SDL_SCANCODE_RETURN, SDL_SCANCODE_KP_ENTER},
+#ifdef __vita__
+		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_A}},
+#else
 		.hardPad = {{kInputTypeButton, SDL_CONTROLLER_BUTTON_BACK}},
+#endif
 	},
 
 	[kNeed_UIUp] =
@@ -294,6 +322,11 @@ static void ParseAltEnter(void)
 
 }
 
+#ifdef __vita__
+#include <vitasdk.h>
+int tapped = 0;
+uint32_t double_tap_tick = 0;
+#endif
 static void UpdateMouseButtonStates(int mouseWheelDelta)
 {
 	uint32_t mouseButtons = SDL_GetMouseState(NULL, NULL);
@@ -301,6 +334,31 @@ static void UpdateMouseButtonStates(int mouseWheelDelta)
 	for (int i = 1; i < NUM_SUPPORTED_MOUSE_BUTTONS_PURESDL; i++)	// SDL buttons start at 1!
 	{
 		bool buttonBit = 0 != (mouseButtons & SDL_BUTTON(i));
+#ifdef __vita__
+		// Make so that double tap is registered as a normal click
+		if (SDL_BUTTON(i) == SDL_BUTTON_LMASK) {
+			if (!tapped && buttonBit) {
+				tapped = 1;
+				if (double_tap_tick) {
+					if (sceKernelGetProcessTimeWide() - double_tap_tick > 500 * 1000)
+						continue;
+					else
+						tapped = 2;
+				} else
+					continue;
+			} else if (tapped && !buttonBit) {
+				double_tap_tick = sceKernelGetProcessTimeWide();
+				tapped = 0;
+				continue;
+			} else if (!tapped && !buttonBit && double_tap_tick) {
+				if (sceKernelGetProcessTimeWide() - double_tap_tick > 500 * 1000)
+					double_tap_tick = 0;
+			} else if (tapped && buttonBit) {
+				if (tapped != 2)
+					continue;
+			}
+		}
+#endif
 		UpdateKeyState(&gMouseButtonStates[i], buttonBit);
 	}
 
