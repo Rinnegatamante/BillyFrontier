@@ -1446,9 +1446,7 @@ int		i;
 void OGL_EnableLighting(void)
 {
 	gMyState_Lighting = true;
-#ifndef __vita__
 	glEnable(GL_LIGHTING);
-#endif
 }
 
 /******************* OGL DISABLE LIGHTING ****************************/
